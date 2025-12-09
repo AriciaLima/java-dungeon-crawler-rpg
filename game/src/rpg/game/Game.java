@@ -7,6 +7,7 @@ import rpg.entities.SteelExecutioner;
 import rpg.entities.ShadowTracker;
 import rpg.entities.OathboundHunter;
 import rpg.items.MainWeapon;
+import rpg.enums.HeroClass;
 
 public class Game {
 

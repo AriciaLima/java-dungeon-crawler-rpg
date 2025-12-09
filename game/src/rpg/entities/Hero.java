@@ -2,6 +2,7 @@ package rpg.entities;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import rpg.items.MainWeapon;
 import rpg.items.Consumable;
 
