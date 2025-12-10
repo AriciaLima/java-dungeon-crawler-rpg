@@ -18,6 +18,9 @@ public abstract class Entity {
     }
 
     public void takeDamage(int damage) {
+        if (damage <= 0) {
+           return;
+        }
         currentHp -= damage;
         if (currentHp < 0) {
             currentHp = 0;
@@ -25,6 +28,9 @@ public abstract class Entity {
     }
 
     public void heal(int amount) {
+        if (amount <= 0) {
+            return;
+        }
         currentHp += amount;
         if (currentHp > maxHp) {
             currentHp = maxHp;
