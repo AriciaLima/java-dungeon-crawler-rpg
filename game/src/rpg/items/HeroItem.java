@@ -1,7 +1,8 @@
 package rpg.items;
 import java.util.List;
 import rpg.enums.HeroClass;
-public class HeroItem {
+
+public abstract class HeroItem {
     protected String name;
     protected int price;
     protected List<HeroClass> allowedHeroes;

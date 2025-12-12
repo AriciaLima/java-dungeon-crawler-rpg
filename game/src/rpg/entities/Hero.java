@@ -27,11 +27,18 @@ public abstract class Hero extends Entity {
         super.showDetails();
         System.out.println("Level: " + level);
         System.out.println("Gold: " + gold);
+        if (mainWeapon != null) {
+            System.out.println("Main weapon: " + mainWeapon.getName());
+        }
         System.out.println("----------------------");
     }
 
     public int getGold() {
         return gold;
+    }
+
+    public MainWeapon getMainWeapon() {
+        return mainWeapon;
     }
 
     public abstract boolean attack(NPC enemy);

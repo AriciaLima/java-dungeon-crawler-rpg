@@ -4,6 +4,7 @@ import java.util.List;
 
 import rpg.enums.HeroClass;
 
+
 public class MainWeapon extends HeroItem {
 
     private int attack;
@@ -16,29 +17,26 @@ public class MainWeapon extends HeroItem {
     }
 
     //Getters
-
-    public String getName() {
-        return name;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
     public int getAttack() {
+
         return attack;
     }
 
     public int getSpecialAttack() {
+
         return specialAttack;
     }
 
     //Methods
 
-    public boolean canBeUsedBy(String heroTypeName) {
-        return allowedHeroes.contains(heroTypeName);
+    public boolean canBeUsedBy(HeroClass heroClass) {
+        if (allowedHeroes == null || allowedHeroes.isEmpty()) {
+            return true;
+        }
+        return allowedHeroes.contains(heroClass);
     }
 
+    @Override
     public void showDetails() {
         System.out.println(name + " | Attack: " + attack + " | Special: " + specialAttack + " | Price: " + price + " gold");
     }
