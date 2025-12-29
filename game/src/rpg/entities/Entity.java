@@ -56,6 +56,6 @@ public abstract class Entity {
     public void showDetails() {
         System.out.println("Name: " + name);
         System.out.println("HP: " + currentHp + "/" + maxHp);
-        System.out.println("----------------------");
+        System.out.println("Strength: " + strength);
     }
 }
