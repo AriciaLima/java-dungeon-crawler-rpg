@@ -3,22 +3,28 @@ package rpg.game;
 import java.util.Scanner;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Collections;
 
 import rpg.entities.Hero;
 import rpg.entities.SteelExecutioner;
 import rpg.entities.ShadowTracker;
 import rpg.entities.OathboundHunter;
+import rpg.entities.NPC;
+import rpg.entities.Vendor;
+
 import rpg.items.CombatConsumable;
 import rpg.items.HeroItem;
 import rpg.items.Potion;
 import rpg.items.MainWeapon;
-import rpg.entities.NPC;
-import rpg.entities.Vendor;
+
 import rpg.enums.HeroClass;
 import rpg.enums.Difficulty;
 import rpg.enums.Rooms;
+import rpg.game.ConsoleColors;
 
+/**
+ * Main game controller.
+ * Handles hero creation, game flow, rooms, enemies and story progression.
+ */
 public class Game {
 
     private final Scanner scanner = new Scanner(System.in);
@@ -29,18 +35,31 @@ public class Game {
         initializeItems();
     }
 
+    /* =========================
+       ITEM INITIALIZATION
+       ========================= */
+
     private void initializeItems() {
+
         allItems = new ArrayList<>();
 
         // Weapons
-        allItems.add(new MainWeapon("Greatsword of Fire", 50, 20, 30, List.of(HeroClass.STEEL_EXECUTIONER)));
-        allItems.add(new MainWeapon("Iron Axe", 30, 15, 25, List.of(HeroClass.STEEL_EXECUTIONER)));
-        allItems.add(new MainWeapon("Shadow Blade", 45, 18, 28, List.of(HeroClass.SHADOW_TRACKER)));
-        allItems.add(new MainWeapon("Dagger of Venom", 25, 12, 20, List.of(HeroClass.SHADOW_TRACKER)));
-        allItems.add(new MainWeapon("Elven Bow", 40, 16, 26, List.of(HeroClass.OATHBOUND_HUNTER)));
-        allItems.add(new MainWeapon("Crossbow", 35, 14, 24, List.of(HeroClass.OATHBOUND_HUNTER)));
+        allItems.add(new MainWeapon("Greatsword of Fire", 50, 20, 30,
+                List.of(HeroClass.STEEL_EXECUTIONER)));
+        allItems.add(new MainWeapon("Iron Axe", 30, 15, 25,
+                List.of(HeroClass.STEEL_EXECUTIONER)));
 
-        // Combat Consumables
+        allItems.add(new MainWeapon("Shadow Blade", 45, 18, 28,
+                List.of(HeroClass.SHADOW_TRACKER)));
+        allItems.add(new MainWeapon("Dagger of Venom", 25, 12, 20,
+                List.of(HeroClass.SHADOW_TRACKER)));
+
+        allItems.add(new MainWeapon("Elven Bow", 40, 16, 26,
+                List.of(HeroClass.OATHBOUND_HUNTER)));
+        allItems.add(new MainWeapon("Crossbow", 35, 14, 24,
+                List.of(HeroClass.OATHBOUND_HUNTER)));
+
+        // Combat consumables
         allItems.add(new CombatConsumable("Fire Bomb", 20, 30, null));
         allItems.add(new CombatConsumable("Ice Bomb", 20, 25, null));
         allItems.add(new CombatConsumable("Throwing Knife", 10, 15, null));
@@ -54,27 +73,23 @@ public class Game {
         allItems.add(new Potion("Elixir of Life", 100, 100, 5, null));
     }
 
-    /*
-     * =========================
-     * HERO CREATION
-     * =========================
-     */
+    /* =========================
+       HERO CREATION
+       ========================= */
 
     public Hero createHero() {
 
         System.out.println("Enter your hero name:");
         String name = scanner.nextLine();
 
-        System.out.println();
-        System.out.println("Choose your class:");
+        System.out.println("\nChoose your class:");
         System.out.println("1 - Steel Executioner");
         System.out.println("2 - Shadow Tracker");
         System.out.println("3 - Oathbound Hunter");
 
         int heroChoice = readIntInRange(1, 3);
 
-        System.out.println();
-        System.out.println("Choose difficulty:");
+        System.out.println("\nChoose difficulty:");
         System.out.println("1 - Easy");
         System.out.println("2 - Hard");
 
@@ -95,31 +110,26 @@ public class Game {
 
         int baseHp = 50;
         int baseStrength = 5;
-        int level = 1;
 
-        System.out.println();
-        System.out.println("Base hero stats:");
+        System.out.println("\nBase stats:");
         System.out.println("HP: " + baseHp);
         System.out.println("Strength: " + baseStrength);
-
-        System.out.println();
-        System.out.println("You have " + creationPoints + " creation points.");
-        System.out.println("Each point spent on HP gives +5 HP.");
-        System.out.println("Each point spent on Strength gives +1 Strength.");
-        System.out.println("You must spend all points.");
+        System.out.println("Creation points: " + creationPoints);
+        System.out.println("Each HP point gives +5 HP");
+        System.out.println("Each Strength point gives +1 Strength");
 
         int hpPoints;
         int strengthPoints;
 
         while (true) {
 
-            System.out.print("\nHow many points do you want to spend on HP? ");
+            System.out.print("\nPoints to HP: ");
             hpPoints = readIntInRange(0, creationPoints);
 
             int remaining = creationPoints - hpPoints;
             System.out.println("Remaining points: " + remaining);
 
-            System.out.print("How many points do you want to spend on Strength? ");
+            System.out.print("Points to Strength: ");
             strengthPoints = readIntInRange(0, remaining);
 
             if (hpPoints + strengthPoints == creationPoints) {
@@ -129,74 +139,53 @@ public class Game {
             System.out.println("You must spend all creation points.");
         }
 
-        int hp = baseHp + (hpPoints * 5);
-        int strength = baseStrength + strengthPoints;
+        int finalHp = baseHp + hpPoints * 5;
+        int finalStrength = baseStrength + strengthPoints;
 
         Hero hero = createHeroByChoice(
                 heroChoice,
                 name,
-                hp,
-                strength,
-                level,
-                initialGold);
+                finalHp,
+                finalStrength,
+                1,
+                initialGold
+        );
 
-        System.out.println();
-        System.out.println("Hero created successfully:");
+        System.out.println("\nHero created successfully:");
         hero.showDetails();
 
         return hero;
     }
 
     private Hero createHeroByChoice(
-            int heroChoice,
+            int choice,
             String name,
             int hp,
             int strength,
             int level,
             int gold) {
 
-        switch (heroChoice) {
+        switch (choice) {
 
             case 1:
                 return new SteelExecutioner(
-                        name,
-                        hp,
-                        strength,
-                        level,
-                        gold,
+                        name, hp, strength, level, gold,
                         new MainWeapon(
-                                "Rusted Greatsword",
-                                0,
-                                10,
-                                16,
+                                "Rusted Greatsword", 0, 10, 16,
                                 List.of(HeroClass.STEEL_EXECUTIONER)));
 
             case 2:
                 return new ShadowTracker(
-                        name,
-                        hp,
-                        strength,
-                        level,
-                        gold,
+                        name, hp, strength, level, gold,
                         new MainWeapon(
-                                "Twin Rust Daggers",
-                                0,
-                                8,
-                                18,
+                                "Twin Rust Daggers", 0, 8, 18,
                                 List.of(HeroClass.SHADOW_TRACKER)));
 
             case 3:
                 return new OathboundHunter(
-                        name,
-                        hp,
-                        strength,
-                        level,
-                        gold,
+                        name, hp, strength, level, gold,
                         new MainWeapon(
-                                "Oathbound Bow",
-                                0,
-                                7,
-                                19,
+                                "Oathbound Bow", 0, 7, 19,
                                 List.of(HeroClass.OATHBOUND_HUNTER)));
 
             default:
@@ -204,15 +193,9 @@ public class Game {
         }
     }
 
-    public Difficulty getSelectedDifficulty() {
-        return selectedDifficulty;
-    }
-
-    /*
-     * =========================
-     * GAME FLOW
-     * =========================
-     */
+    /* =========================
+       GAME FLOW
+       ========================= */
 
     public void startGame(Hero hero) {
 
@@ -237,11 +220,8 @@ public class Game {
                     break;
 
                 case BONES:
-                    currentRoom = roomBones(hero);
-                    break;
-
                 case SMOKE:
-                    currentRoom = roomSmoke(hero);
+                    currentRoom = roomCombat(hero);
                     break;
 
                 case SHRINE_VENDOR:
@@ -252,174 +232,185 @@ public class Game {
                     currentRoom = roomBoss(hero);
                     break;
             }
-
-            if (currentRoom != Rooms.VICTORY && currentRoom != Rooms.GAME_OVER) {
-                System.out.println("Do you want to use a potion? (1- Yes, 2- No)");
-                int choice = readIntInRange(1, 2);
-                if (choice == 1) {
-                    hero.usePotion();
-                }
-            }
         }
 
-        System.out.println();
-
         if (currentRoom == Rooms.VICTORY) {
-            System.out.println("You survived the Oathbound Depths.");
+            System.out.println("\nYou survived the Oathbound Depths.");
             System.out.println("The curse of Blackstone has been broken.");
         } else {
-            System.out.println("Your journey ends here.");
+            System.out.println("\nYour journey ends here.");
             System.out.println("Blackstone remains cursed.");
         }
     }
 
-    /*
-     * =========================
-     * STORY INTRO
-     * =========================
-     */
-
-    private void showIntro() {
-        System.out.println("====================================");
-        System.out.println("           OATHBOUND DEPTHS");
-        System.out.println("====================================");
-        System.out.println();
-        System.out.println("The village of Blackstone was built over ancient ruins.");
-        System.out.println("For years, the depths below remained silent.");
-        System.out.println();
-        System.out.println("Now the tunnels glow with cursed symbols.");
-        System.out.println("Hunters disappear. Screams echo at night.");
-        System.out.println();
-        System.out.println("The Guild has issued a contract.");
-        System.out.println("A legendary hunter known as The Broken Oath");
-        System.out.println("is said to be the heart of the curse.");
-        System.out.println();
-        System.out.println("You are a bounty hunter of the Guild.");
-        System.out.println("Enter the depths. End the curse. Survive.");
-        System.out.println();
-        System.out.println("====================================");
-    }
-
-    /*
-     * =========================
-     * ROOM METHODS
-     * =========================
-     */
+    /* =========================
+       ROOMS
+       ========================= */
 
     private Rooms roomVillageVendor(Hero hero) {
+
         System.out.println();
         System.out.println("Hunters Hall of Blackstone");
-        System.out.println("1 - Accept the contract");
-        System.out.println("2 - Refuse and stay in the village");
+        System.out.println();
+
+        System.out.println("The hall is silent.");
+        System.out.println("Old banners hang torn.");
+        System.out.println("The smell of iron and ash fills the air.");
+        System.out.println();
+
+        System.out.println("The Guildmaster steps forward.");
+        System.out.println("\"Blackstone is dying.\"");
+        System.out.println();
+        System.out.println("\"Below this village lie the Oathbound Depths.\"");
+        System.out.println("\"Hunters we sent never returned.\"");
+        System.out.println();
+        System.out.println("\"At the heart of the dungeon stands a fallen hunter.\"");
+        System.out.println("\"Known only as The Broken Oath.\"");
+        System.out.println();
+        System.out.println("\"Your contract is simple.\"");
+        System.out.println("\"Enter the Depths.\"");
+        System.out.println("\"End the curse.\"");
+        System.out.println();
+
+        System.out.println("1 Accept the contract");
+        System.out.println("2 Refuse and remain in Blackstone");
 
         int choice = readIntInRange(1, 2);
 
         if (choice == 2) {
+            System.out.println();
+            System.out.println("You turn away from the contract.");
+            System.out.println("Blackstone remains cursed.");
             return Rooms.GAME_OVER;
         }
 
         return Rooms.ENTRANCE;
     }
 
+
     private Rooms roomEntrance() {
-        System.out.println();
-        System.out.println("Dungeon Entrance");
-        System.out.println("Cold air rises from the depths below.");
+
+        System.out.println("\nDungeon Entrance");
+        System.out.println("Cold air rises from below.");
+
         return Rooms.CROSSROADS;
     }
 
     private Rooms roomCrossroads() {
-        System.out.println();
-        System.out.println("Crossroads");
+
+        System.out.println("\nYou reach a crossroads.");
+        System.out.println("Two paths stretch before you.\n");
+
         System.out.println("1 - Path of Bones");
-        System.out.println("2 - Path of Smoke");
+        System.out.println("   Direct, brutal and dangerous.");
 
-        int choice = readIntInRange(1, 2);
+        System.out.println("\n2 - Path of Smoke");
+        System.out.println("   Twisted, slow and full of secrets.");
 
-        if (choice == 1) {
+        if (readIntInRange(1, 2) == 1) {
             return Rooms.BONES;
         }
+
         return Rooms.SMOKE;
     }
 
-    private Rooms roomBones(Hero hero) {
-        System.out.println();
-        System.out.println("Path of Bones");
-        System.out.println("Enemies block your way.");
+    private Rooms roomCombat(Hero hero) {
 
-        NPC skeleton = new NPC("Skeleton Warrior", 40, 8, 15, "A reanimated pile of bones.");
-        boolean victory = hero.attack(skeleton);
+        System.out.println("\nYou advance deeper into the dungeon...");
+        System.out.println("You sense danger nearby.");
 
-        if (victory) {
-            return Rooms.SHRINE_VENDOR;
-        } else {
+        NPC enemy = generateRandomEnemy();
+        enemy.showDetails();
+
+        if (!hero.attack(enemy)) {
             return Rooms.GAME_OVER;
         }
-    }
 
-    private Rooms roomSmoke(Hero hero) {
-        System.out.println();
-        System.out.println("Path of Smoke");
-        System.out.println("The fog hides strange dangers.");
+        System.out.println("\nYou survive the encounter.");
 
-        NPC ghost = new NPC("Cursed Ghost", 35, 10, 20, "A wailing spirit.");
-        boolean victory = hero.attack(ghost);
+        System.out.println("\nDo you want to use a potion?");
+        System.out.println("1 - Yes");
+        System.out.println("2 - No");
 
-        if (victory) {
-            return Rooms.SHRINE_VENDOR;
-        } else {
-            return Rooms.GAME_OVER;
+        if (readIntInRange(1, 2) == 1) {
+            hero.usePotion();
         }
+
+        return Rooms.SHRINE_VENDOR;
     }
 
     private Rooms roomShrineVendor(Hero hero) {
-        System.out.println();
-        System.out.println("Forgotten Shrine");
-        System.out.println("You take a moment to rest.");
 
+        System.out.println("\nForgotten Shrine");
         Vendor vendor = new Vendor(allItems);
-        System.out.println("A wandering merchant is resting here.");
-        System.out.println("1 - Continue to the depths");
-        System.out.println("2 - Trade");
 
         while (true) {
-            int choice = readIntInRange(1, 2);
+            System.out.println("1 - Continue");
+            System.out.println("2 - Trade");
 
-            if (choice == 1) {
+            if (readIntInRange(1, 2) == 1) {
                 return Rooms.BOSS;
-            } else {
-                vendor.sell(hero);
-                System.out.println("1 - Continue to the depths");
-                System.out.println("2 - Trade");
             }
+
+            vendor.sell(hero);
         }
     }
 
     private Rooms roomBoss(Hero hero) {
-        System.out.println();
-        System.out.println("Final Chamber");
+
+        System.out.println("\nFinal Chamber");
         System.out.println("The Broken Oath stands before you.");
 
-        NPC boss = new NPC("The Broken Oath", 100, 15, 100, "The legendary hunter, corrupted by the curse.");
-        boolean victory = hero.attack(boss);
+        NPC boss = new NPC(
+                "The Broken Oath",
+                100,
+                15,
+                100,
+                "A fallen hunter bound by shattered oaths."
+        );
 
-        if (victory) {
+        if (hero.attack(boss)) {
             return Rooms.VICTORY;
-        } else {
-            return Rooms.GAME_OVER;
         }
+
+        return Rooms.GAME_OVER;
     }
 
-    /*
-     * =========================
-     * INPUT UTILITIES
-     * =========================
-     */
+    /* =========================
+       ENEMIES
+       ========================= */
+
+    private NPC generateRandomEnemy() {
+
+        if (Math.random() < 0.5) {
+            return new NPC(
+                    "Skeleton Warrior",
+                    40,
+                    8,
+                    15,
+                    "A reanimated pile of bones."
+            );
+        }
+
+        return new NPC(
+                "Cursed Ghost",
+                35,
+                10,
+                20,
+                "A wailing spirit trapped between worlds."
+        );
+    }
+
+    /* =========================
+       INPUT
+       ========================= */
 
     private int readIntInRange(int min, int max) {
+
         int value;
 
         while (true) {
+
             System.out.print("Your choice (" + min + "-" + max + "): ");
 
             if (scanner.hasNextInt()) {
@@ -433,7 +424,37 @@ public class Game {
                 scanner.nextLine();
             }
 
-            System.out.println("Invalid option, please try again.");
+            System.out.println("Invalid option.");
         }
     }
+
+    /* =========================
+       INTRO
+       ========================= */
+
+    private void showIntro() {
+
+        System.out.println(
+                ConsoleColors.PURPLE + ConsoleColors.BOLD +
+                        "====================================\n" +
+                        "           OATHBOUND DEPTHS\n" +
+                        "====================================" +
+                        ConsoleColors.RESET
+        );
+
+        System.out.println();
+        System.out.println("The village of Blackstone was built over ancient ruins.");
+        System.out.println("For generations, the depths below remained sealed.");
+        System.out.println();
+        System.out.println("Now, cursed lights flicker in forgotten tunnels.");
+        System.out.println("Hunters vanish.");
+        System.out.println("Screams echo through the stone at night.");
+        System.out.println();
+        System.out.println("The ground itself feels restless.");
+        System.out.println();
+        System.out.println("End the curse.");
+        System.out.println("Or fall with it.");
+    }
+
+
 }

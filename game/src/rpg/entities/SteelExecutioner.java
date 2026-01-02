@@ -6,39 +6,87 @@ import java.util.List;
 import rpg.items.CombatConsumable;
 import rpg.items.Consumable;
 import rpg.items.MainWeapon;
+import rpg.game.ConsoleColors;
+import rpg.enums.HeroClass;
 
-import java.util.Random;
-
+/**
+ * Represents the Steel Executioner hero class.
+ * A heavily armored melee fighter that excels at absorbing damage.
+ * Enemies attack first, but their damage is reduced by armor.
+ */
 public class SteelExecutioner extends Hero {
 
-    private Random random = new Random();
-
+    /**
+     * Constructor for SteelExecutioner.
+     *
+     * @param name       The hero's name
+     * @param maxHp      The hero's maximum HP
+     * @param strength   The hero's strength attribute
+     * @param level      The hero's level
+     * @param gold       The hero's starting gold
+     * @param mainWeapon The hero's starting weapon
+     */
     public SteelExecutioner(String name, int maxHp, int strength,
-            int level, int gold, MainWeapon mainWeapon) {
+                            int level, int gold, MainWeapon mainWeapon) {
         super(name, maxHp, strength, level, gold, mainWeapon);
     }
 
-    @Override
-    public rpg.enums.HeroClass getHeroClass() {
-        return rpg.enums.HeroClass.STEEL_EXECUTIONER;
-    }
-
+    /**
+     * Combat logic for the Steel Executioner.
+     *
+     * Rules:
+     * Enemies attack first
+     * Enemy damage is reduced by 20 percent due to heavy armor
+     * No special attack
+     * Can use combat consumables
+     *
+     * @param enemy The enemy NPC
+     * @return true if the hero wins the combat, false otherwise
+     */
     @Override
     public boolean attack(NPC enemy) {
 
-        boolean specialUsed = false;
+        System.out.println();
+        System.out.println(
+                ConsoleColors.PURPLE + ConsoleColors.BOLD +
+                        "=========================\n" +
+                        "     EXECUTION COMBAT    \n" +
+                        "=========================" +
+                        ConsoleColors.RESET
+        );
 
-        System.out.println("Combat started against " + enemy.getName());
+        System.out.println(
+                ConsoleColors.YELLOW +
+                        "Enemy: " + enemy.getName() +
+                        ConsoleColors.RESET
+        );
+
+        enemy.showDetails();
 
         while (this.isAlive() && enemy.isAlive()) {
 
-            /* Enemy attacks first with reduced damage */
+            /* ENEMY TURN FIRST (reduced damage due to armor) */
             int enemyDamage = (int) (enemy.getStrength() * 0.8);
             takeDamage(enemyDamage);
-            System.out.println("Enemy attacks for " + enemyDamage + " damage.");
+
+            System.out.println(
+                    ConsoleColors.RED +
+                            "Enemy strikes for " + enemyDamage + " damage." +
+                            ConsoleColors.RESET
+            );
+
+            System.out.println(
+                    ConsoleColors.WHITE +
+                            "Your HP: " + currentHp + "/" + maxHp +
+                            ConsoleColors.RESET
+            );
 
             if (!this.isAlive()) {
-                System.out.println("You were defeated.");
+                System.out.println(
+                        ConsoleColors.RED + ConsoleColors.BOLD +
+                                "YOU WERE DEFEATED." +
+                                ConsoleColors.RESET
+                );
                 return false;
             }
 
@@ -48,36 +96,34 @@ public class SteelExecutioner extends Hero {
 
                 System.out.println();
                 System.out.println("Choose your action:");
-                System.out.println("1 Normal attack");
-                System.out.println("2 Special attack");
-                System.out.println("3 Combat consumable");
-                System.out.println("4 Use Potion");
+                System.out.println("1 - Normal attack");
+                System.out.println("2 - Combat consumable");
 
-                int choice = readIntInRange(1, 4);
+                int choice = readIntInRange(1, 2);
 
-                /* Normal attack */
+                /* NORMAL ATTACK */
                 if (choice == 1) {
-                    int heroDamage = strength + mainWeapon.getAttack() + random.nextInt(5);
+
+                    int heroDamage = strength + mainWeapon.getAttack();
                     enemy.takeDamage(heroDamage);
-                    System.out.println("You deal " + heroDamage + " damage.");
+
+                    System.out.println(
+                            ConsoleColors.GREEN +
+                                    "You crush the enemy for " + heroDamage + " damage." +
+                                    ConsoleColors.RESET
+                    );
+
+                    System.out.println(
+                            ConsoleColors.WHITE +
+                                    "Enemy HP: " + enemy.getCurrentHp() + "/" + enemy.getMaxHp() +
+                                    ConsoleColors.RESET
+                    );
+
                     actionDone = true;
                 }
 
-                /* Special attack */
-                else if (choice == 2) {
-                    if (specialUsed) {
-                        System.out.println("Special attack already used.");
-                    } else {
-                        int heroDamage = strength + mainWeapon.getSpecialAttack();
-                        enemy.takeDamage(heroDamage);
-                        System.out.println("You deal " + heroDamage + " special damage.");
-                        specialUsed = true;
-                        actionDone = true;
-                    }
-                }
-
-                /* Combat consumable */
-                else if (choice == 3) {
+                /* COMBAT CONSUMABLE */
+                else {
 
                     List<CombatConsumable> combatItems = new ArrayList<>();
 
@@ -88,16 +134,19 @@ public class SteelExecutioner extends Hero {
                     }
 
                     if (combatItems.isEmpty()) {
-                        System.out.println("You have no combat consumables.");
+                        System.out.println(
+                                ConsoleColors.YELLOW +
+                                        "You have no combat consumables." +
+                                        ConsoleColors.RESET
+                        );
                         continue;
                     }
 
                     System.out.println("Combat consumables:");
                     for (int i = 0; i < combatItems.size(); i++) {
-                        System.out.println((i + 1) + " " + combatItems.get(i).getName());
+                        System.out.println((i + 1) + " - " + combatItems.get(i).getName());
                     }
-
-                    System.out.println((combatItems.size() + 1) + " Cancel");
+                    System.out.println((combatItems.size() + 1) + " - Cancel");
 
                     int c = readIntInRange(1, combatItems.size() + 1);
 
@@ -109,22 +158,38 @@ public class SteelExecutioner extends Hero {
                     enemy.takeDamage(cc.getInstantAttackDamage());
                     inventory.remove(cc);
 
-                    System.out.println("Consumable used.");
-                    actionDone = true;
-                }
+                    System.out.println(
+                            ConsoleColors.GREEN +
+                                    "You used " + cc.getName() +
+                                    " dealing " + cc.getInstantAttackDamage() + " damage." +
+                                    ConsoleColors.RESET
+                    );
 
-                /* Use Potion */
-                else {
-                    if (usePotion()) {
-                        actionDone = true;
-                    }
+                    actionDone = true;
                 }
             }
         }
 
-        System.out.println("Enemy defeated.");
+        System.out.println();
+        System.out.println(
+                ConsoleColors.GREEN + ConsoleColors.BOLD +
+                        "ENEMY DEFEATED!" +
+                        ConsoleColors.RESET
+        );
+
         addGold(enemy.getGold());
         levelUp();
+
         return true;
+    }
+
+    /**
+     * Returns the hero class enum.
+     *
+     * @return HeroClass.STEEL_EXECUTIONER
+     */
+    @Override
+    public HeroClass getHeroClass() {
+        return HeroClass.STEEL_EXECUTIONER;
     }
 }

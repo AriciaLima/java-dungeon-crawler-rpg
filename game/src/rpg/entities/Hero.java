@@ -9,6 +9,11 @@ import rpg.items.Consumable;
 import rpg.items.Potion;
 import rpg.enums.HeroClass;
 
+/**
+ * Abstract class representing the main character controlled by the player.
+ * Extends the Entity class and adds RPG-specific features like level, gold,
+ * weapon, and inventory.
+ */
 public abstract class Hero extends Entity {
 
     protected int level;
@@ -18,8 +23,12 @@ public abstract class Hero extends Entity {
 
     protected Scanner scanner = new Scanner(System.in);
 
+    /**
+     * Constructor for the Hero class.
+     */
     public Hero(String name, int maxHp, int strength,
-            int level, int gold, MainWeapon mainWeapon) {
+                int level, int gold, MainWeapon mainWeapon) {
+
         super(name, maxHp, strength);
         this.level = level;
         this.gold = gold;
@@ -38,6 +47,10 @@ public abstract class Hero extends Entity {
         System.out.println("----------------------");
     }
 
+    /* =========================
+       GETTERS
+       ========================= */
+
     public int getGold() {
         return gold;
     }
@@ -46,27 +59,54 @@ public abstract class Hero extends Entity {
         return mainWeapon;
     }
 
-    // Combat rewards
+    public int getLevel() {
+        return level;
+    }
+
+    public List<Consumable> getInventory() {
+        return inventory;
+    }
+
+    /* =========================
+       INVENTORY AND EQUIPMENT
+       ========================= */
 
     public void addGold(int amount) {
         gold += amount;
     }
 
+    public void setMainWeapon(MainWeapon weapon) {
+        this.mainWeapon = weapon;
+    }
+
+    public void addConsumable(Consumable consumable) {
+        inventory.add(consumable);
+    }
+
+    /* =========================
+       LEVEL UP
+       ========================= */
+
     public void levelUp() {
+
         level++;
         maxHp += 10;
         currentHp = maxHp;
         strength += 1;
 
+        System.out.println();
         System.out.println("Level up!");
         System.out.println("New level: " + level);
         System.out.println("Max HP increased to " + maxHp);
         System.out.println("Strength increased to " + strength);
     }
 
-    // Input utility
+    /* =========================
+       INPUT UTILITY
+       ========================= */
 
     protected int readIntInRange(int min, int max) {
+
         int value;
 
         while (true) {
@@ -85,8 +125,14 @@ public abstract class Hero extends Entity {
         }
     }
 
+    /* =========================
+       POTIONS
+       ========================= */
+
     public boolean usePotion() {
+
         List<Potion> potions = new ArrayList<>();
+
         for (Consumable item : inventory) {
             if (item instanceof Potion) {
                 potions.add((Potion) item);
@@ -94,15 +140,17 @@ public abstract class Hero extends Entity {
         }
 
         if (potions.isEmpty()) {
-            System.out.println("You don't have any potions.");
+            System.out.println("You do not have any potions.");
             return false;
         }
 
         System.out.println("Choose a potion to use:");
+
         for (int i = 0; i < potions.size(); i++) {
             System.out.print((i + 1) + ". ");
             potions.get(i).showDetails();
         }
+
         System.out.println((potions.size() + 1) + ". Cancel");
 
         int choice = readIntInRange(1, potions.size() + 1);
@@ -119,17 +167,29 @@ public abstract class Hero extends Entity {
         }
 
         if (selectedPotion.getStrengthIncrease() > 0) {
-            this.strength += selectedPotion.getStrengthIncrease();
+            strength += selectedPotion.getStrengthIncrease();
             System.out.println("Your strength increased by " + selectedPotion.getStrengthIncrease() + ".");
         }
 
         inventory.remove(selectedPotion);
+
         System.out.println("Potion used: " + selectedPotion.getName());
         System.out.println("Current HP: " + currentHp + "/" + maxHp);
+
         return true;
     }
 
+    /* =========================
+       COMBAT
+       ========================= */
+
+    /**
+     * Abstract combat method implemented by each hero subclass.
+     */
     public abstract boolean attack(NPC enemy);
 
+    /**
+     * Returns the hero class enum.
+     */
     public abstract HeroClass getHeroClass();
 }
