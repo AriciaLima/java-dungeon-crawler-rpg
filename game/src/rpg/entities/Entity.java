@@ -1,6 +1,10 @@
 package rpg.entities;
 
+/**
+ * Abstract base class that represents any living entity in the game.
+ */
 public abstract class Entity {
+
     protected String name;
     protected int maxHp;
     protected int currentHp;
@@ -9,8 +13,8 @@ public abstract class Entity {
     public Entity(String name, int maxHp, int strength) {
         this.name = name;
         this.maxHp = maxHp;
-        this.currentHp = maxHp;
         this.strength = strength;
+        this.currentHp = maxHp;
     }
 
     public boolean isAlive() {
@@ -19,26 +23,24 @@ public abstract class Entity {
 
     public void takeDamage(int damage) {
         if (damage <= 0) {
-           return;
+            return;
         }
-        currentHp -= damage;
-        if (currentHp < 0) {
-            currentHp = 0;
-        }
+        currentHp = Math.max(currentHp - damage, 0);
     }
 
     public void heal(int amount) {
         if (amount <= 0) {
             return;
         }
-        currentHp += amount;
-        if (currentHp > maxHp) {
-            currentHp = maxHp;
-        }
+        currentHp = Math.min(currentHp + amount, maxHp);
     }
 
     public int getCurrentHp() {
         return currentHp;
+    }
+
+    public int getMaxHp() {
+        return maxHp;
     }
 
     public int getStrength() {
@@ -49,13 +51,9 @@ public abstract class Entity {
         return name;
     }
 
-    public int getMaxHp() {
-        return maxHp;
-    }
-
-    public void showDetails() {
-        System.out.println("Name: " + name);
-        System.out.println("HP: " + currentHp + "/" + maxHp);
-        System.out.println("Strength: " + strength);
+    public String getDetails() {
+        return "Name: " + name +
+                "\nHP: " + currentHp + "/" + maxHp +
+                "\nStrength: " + strength;
     }
 }

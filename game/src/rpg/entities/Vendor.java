@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
+import rpg.items.Consumable;
 import rpg.items.HeroItem;
 import rpg.items.MainWeapon;
-import rpg.items.Consumable;
 
 /**
  * Represents a vendor NPC in the game.
@@ -22,7 +22,7 @@ public class Vendor {
     /**
      * Creates a vendor with a random stock of up to 10 items.
      *
-     * @param allItems All items available in the game.
+     * @param allItems all items available in the game
      */
     public Vendor(List<HeroItem> allItems) {
 
@@ -34,9 +34,10 @@ public class Vendor {
         }
     }
 
-    /**
-     * Prints the current shop stock.
-     */
+    /* =========================
+       SHOP DISPLAY
+       ========================= */
+
     private void printShop() {
 
         System.out.println();
@@ -52,18 +53,16 @@ public class Vendor {
         System.out.println();
     }
 
-    /**
-     * Handles buying items and leaving the shop.
-     *
-     * @param hero The hero interacting with the vendor.
-     */
+    /* =========================
+       SHOP INTERACTION
+       ========================= */
+
     public void sell(Hero hero) {
 
         while (true) {
 
             printShop();
-            System.out.println("Your gold: " + hero.getGold());
-            System.out.print("Choose an option: ");
+            showHeroGold(hero);
 
             int choice = readIntInRange(1, shop.size() + 1);
 
@@ -74,36 +73,68 @@ public class Vendor {
 
             HeroItem item = shop.get(choice - 1);
 
-            if (hero.getGold() < item.getPrice()) {
-                System.out.println("You do not have enough gold.");
+            if (!canBuyItem(hero, item)) {
                 continue;
             }
 
-            if (!item.canBeUsedBy(hero.getHeroClass())) {
-                System.out.println("Your class cannot use this item.");
-                continue;
-            }
-
+            // spend gold
             hero.addGold(-item.getPrice());
 
-            if (item instanceof MainWeapon) {
-
-                System.out.println("You bought " + item.getName());
-                System.out.println("Old weapon: " + hero.getMainWeapon().getName());
-                hero.setMainWeapon((MainWeapon) item);
-                System.out.println("New weapon equipped.");
-
-            } else if (item instanceof Consumable) {
-
-                hero.addConsumable((Consumable) item);
-                System.out.println("You bought " + item.getName());
-            }
+            handlePurchase(hero, item);
         }
     }
 
-    /**
-     * Reads an integer input within a valid range.
-     */
+    private void showHeroGold(Hero hero) {
+        System.out.println("Your gold: " + hero.getGold());
+        System.out.print("Choose an option: ");
+    }
+
+    private boolean canBuyItem(Hero hero, HeroItem item) {
+
+        if (hero.getGold() < item.getPrice()) {
+            System.out.println("You do not have enough gold.");
+            return false;
+        }
+
+        if (!item.canBeUsedBy(hero.getHeroClass())) {
+            System.out.println("Your class cannot use this item.");
+            return false;
+        }
+
+        return true;
+    }
+
+    private void handlePurchase(Hero hero, HeroItem item) {
+
+        if (item instanceof MainWeapon) {
+            equipWeapon(hero, (MainWeapon) item);
+            return;
+        }
+
+        if (item instanceof Consumable) {
+            hero.addConsumable((Consumable) item);
+            System.out.println("You bought " + item.getName());
+        }
+    }
+
+    private void equipWeapon(Hero hero, MainWeapon weapon) {
+
+        System.out.println("You bought " + weapon.getName());
+
+        if (hero.getMainWeapon() != null) {
+            System.out.println("Old weapon: " + hero.getMainWeapon().getName());
+        } else {
+            System.out.println("Old weapon: none");
+        }
+
+        hero.setMainWeapon(weapon);
+        System.out.println("New weapon equipped.");
+    }
+
+    /* =========================
+       INPUT UTILITY
+       ========================= */
+
     private int readIntInRange(int min, int max) {
 
         int value;
@@ -121,7 +152,9 @@ public class Vendor {
                 scanner.nextLine();
             }
 
-            System.out.print("Invalid input. Choose between " + min + " and " + max + ": ");
+            System.out.print(
+                    "Invalid input. Choose between " + min + " and " + max + ": "
+            );
         }
     }
 }

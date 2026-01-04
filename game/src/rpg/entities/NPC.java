@@ -1,12 +1,18 @@
 package rpg.entities;
 
+/**
+ * Represents a non playable character in the game.
+ * Usually enemies or hostile entities that can be defeated
+ * and reward the hero with gold.
+ */
 public class NPC extends Entity {
+
     protected int gold;
     protected String description;
 
     public NPC(String name, int maxHp, int strength, int gold, String description) {
         super(name, maxHp, strength);
-        this.gold = gold;
+        this.gold = Math.max(gold, 0);
         this.description = description;
     }
 
@@ -18,15 +24,23 @@ public class NPC extends Entity {
         return description;
     }
 
+    /**
+     * Returns a formatted string with NPC details.
+     *
+     * @return string containing NPC information
+     */
     @Override
-    public void showDetails() {
-        super.showDetails();
-        System.out.println("Gold: " + gold);
-        if (description != null && !description.isBlank()) {
-            System.out.println("Description: " + description);
+    public String getDetails() {
 
+        StringBuilder details = new StringBuilder();
+
+        details.append(super.getDetails());
+        details.append("\nGold: ").append(gold);
+
+        if (description != null && !description.isBlank()) {
+            details.append("\nDescription: ").append(description);
         }
-        System.out.println("----------------------");
+
+        return details.toString();
     }
 }
-

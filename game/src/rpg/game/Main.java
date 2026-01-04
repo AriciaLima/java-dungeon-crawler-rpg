@@ -2,6 +2,7 @@ package rpg.game;
 
 import java.util.Scanner;
 import rpg.entities.Hero;
+import rpg.game.ConsoleColors;
 
 public class Main {
 
@@ -11,49 +12,114 @@ public class Main {
         Game game = new Game();
 
         boolean running = true;
-        Hero hero = null;
+        Hero hero;
+
+        showTitle();
+        showIntro();
 
         while (running) {
 
-            if (hero == null) {
-                hero = game.createHero();
-            }
-
+            hero = game.createHero();
             game.startGame(hero);
 
             System.out.println();
-            System.out.println("What do you want to do now?");
-            System.out.println("1 - Play again with the same hero");
-            System.out.println("2 - Create a new hero");
-            System.out.println("3 - Exit game");
+            System.out.println(ConsoleColors.YELLOW + "What do you want to do now?" + ConsoleColors.RESET);
+            System.out.println("1 Play again");
+            System.out.println("2 Exit game");
 
-            int choice = readIntInRange(scanner, 1, 3);
+            int choice = readIntInRange(scanner, 1, 2);
 
-            switch (choice) {
-                case 1:
-                    // same hero, nothing to do
-                    break;
-
-                case 2:
-                    hero = null;
-                    break;
-
-                case 3:
-                    running = false;
-                    break;
+            if (choice == 2) {
+                running = false;
             }
         }
 
         System.out.println();
-        System.out.println("Thank you for playing.");
+        System.out.println(ConsoleColors.CYAN + "Thank you for playing Oathbound Depths." + ConsoleColors.RESET);
         scanner.close();
     }
 
+    private static void showTitle() {
+
+        System.out.println();
+        System.out.println(
+                ConsoleColors.PURPLE + ConsoleColors.BOLD +
+                        "====================================\n" +
+                        "           OATHBOUND DEPTHS          \n" +
+                        "====================================" +
+                        ConsoleColors.RESET
+        );
+        System.out.println();
+    }
+
+    private static void showIntro() {
+
+        System.out.println(
+                ConsoleColors.BLUE +
+                        "The village of Blackstone was built over ancient ruins." +
+                        ConsoleColors.RESET
+        );
+
+        System.out.println(
+                ConsoleColors.BLUE +
+                        "For generations, the depths below remained sealed." +
+                        ConsoleColors.RESET
+        );
+
+        System.out.println();
+
+        System.out.println(
+                ConsoleColors.BLUE +
+                        "Now cursed lights flicker in forgotten tunnels." +
+                        ConsoleColors.RESET
+        );
+
+        System.out.println(
+                ConsoleColors.BLUE +
+                        "Hunters vanish." +
+                        ConsoleColors.RESET
+        );
+
+        System.out.println(
+                ConsoleColors.BLUE +
+                        "Screams echo through the stone at night." +
+                        ConsoleColors.RESET
+        );
+
+        System.out.println();
+
+        System.out.println(
+                ConsoleColors.BLUE +
+                        "A single contract remains." +
+                        ConsoleColors.RESET
+        );
+
+        System.out.println(
+                ConsoleColors.BLUE +
+                        "Enter the depths." +
+                        ConsoleColors.RESET
+        );
+
+        System.out.println(
+                ConsoleColors.BLUE +
+                        "End the curse." +
+                        ConsoleColors.RESET
+        );
+
+        System.out.println();
+    }
+
     private static int readIntInRange(Scanner scanner, int min, int max) {
+
         int value;
 
         while (true) {
-            System.out.print("Your choice (" + min + "-" + max + "): ");
+
+            System.out.print(
+                    ConsoleColors.CYAN +
+                            "Your choice (" + min + " to " + max + "): " +
+                            ConsoleColors.RESET
+            );
 
             if (scanner.hasNextInt()) {
                 value = scanner.nextInt();
@@ -66,7 +132,11 @@ public class Main {
                 scanner.nextLine();
             }
 
-            System.out.println("Invalid option, please try again.");
+            System.out.println(
+                    ConsoleColors.RED +
+                            "Invalid option. Try again." +
+                            ConsoleColors.RESET
+            );
         }
     }
 }
