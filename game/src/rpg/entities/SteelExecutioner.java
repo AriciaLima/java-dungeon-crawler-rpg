@@ -35,10 +35,10 @@ public class SteelExecutioner extends Hero {
      * Combat logic for the Steel Executioner.
      *
      * Rules:
-     * Enemies attack first
-     * Enemy damage is reduced by 20 percent due to heavy armor
-     * No special attack
-     * Can use combat consumables
+     * - Enemy attacks first
+     * - Enemy damage is reduced by 20 percent due to heavy armor
+     * - No special attack
+     * - Can use combat consumables
      *
      * @param enemy The enemy NPC
      * @return true if the hero wins the combat, false otherwise
@@ -60,8 +60,6 @@ public class SteelExecutioner extends Hero {
                         "Enemy: " + enemy.getName() +
                         ConsoleColors.RESET
         );
-
-        enemy.showDetails();
 
         while (this.isAlive() && enemy.isAlive()) {
 
@@ -92,6 +90,7 @@ public class SteelExecutioner extends Hero {
 
             boolean actionDone = false;
 
+            /* HERO TURN */
             while (!actionDone) {
 
                 System.out.println();
@@ -113,12 +112,7 @@ public class SteelExecutioner extends Hero {
                                     ConsoleColors.RESET
                     );
 
-                    System.out.println(
-                            ConsoleColors.WHITE +
-                                    "Enemy HP: " + enemy.getCurrentHp() + "/" + enemy.getMaxHp() +
-                                    ConsoleColors.RESET
-                    );
-
+                    showEnemyHp(enemy);
                     actionDone = true;
                 }
 
@@ -165,6 +159,7 @@ public class SteelExecutioner extends Hero {
                                     ConsoleColors.RESET
                     );
 
+                    showEnemyHp(enemy);
                     actionDone = true;
                 }
             }

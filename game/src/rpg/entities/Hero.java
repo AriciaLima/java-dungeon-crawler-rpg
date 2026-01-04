@@ -8,13 +8,18 @@ import rpg.items.MainWeapon;
 import rpg.items.Consumable;
 import rpg.items.Potion;
 import rpg.enums.HeroClass;
+import rpg.game.ConsoleColors;
 
 /**
  * Abstract class representing the main character controlled by the player.
- * Extends the Entity class and adds RPG-specific features like level, gold,
- * weapon, and inventory.
+ * Extends Entity and adds RPG-specific mechanics such as level, gold,
+ * equipment, inventory, and combat utilities.
  */
 public abstract class Hero extends Entity {
+
+    /* =========================
+       ATTRIBUTES
+       ========================= */
 
     protected int level;
     protected int gold;
@@ -23,8 +28,19 @@ public abstract class Hero extends Entity {
 
     protected Scanner scanner = new Scanner(System.in);
 
+    /* =========================
+       CONSTRUCTOR
+       ========================= */
+
     /**
-     * Constructor for the Hero class.
+     * Creates a new Hero instance.
+     *
+     * @param name       hero name
+     * @param maxHp      maximum health points
+     * @param strength   strength attribute
+     * @param level      starting level
+     * @param gold       starting gold
+     * @param mainWeapon starting weapon
      */
     public Hero(String name, int maxHp, int strength,
                 int level, int gold, MainWeapon mainWeapon) {
@@ -35,6 +51,10 @@ public abstract class Hero extends Entity {
         this.mainWeapon = mainWeapon;
         this.inventory = new ArrayList<>();
     }
+
+    /* =========================
+       DISPLAY
+       ========================= */
 
     @Override
     public void showDetails() {
@@ -87,6 +107,9 @@ public abstract class Hero extends Entity {
        LEVEL UP
        ========================= */
 
+    /**
+     * Levels up the hero, increasing stats.
+     */
     public void levelUp() {
 
         level++;
@@ -105,6 +128,9 @@ public abstract class Hero extends Entity {
        INPUT UTILITY
        ========================= */
 
+    /**
+     * Reads an integer from console within a valid range.
+     */
     protected int readIntInRange(int min, int max) {
 
         int value;
@@ -129,6 +155,11 @@ public abstract class Hero extends Entity {
        POTIONS
        ========================= */
 
+    /**
+     * Allows the hero to use a potion from inventory.
+     *
+     * @return true if a potion was used, false otherwise
+     */
     public boolean usePotion() {
 
         List<Potion> potions = new ArrayList<>();
@@ -168,7 +199,9 @@ public abstract class Hero extends Entity {
 
         if (selectedPotion.getStrengthIncrease() > 0) {
             strength += selectedPotion.getStrengthIncrease();
-            System.out.println("Your strength increased by " + selectedPotion.getStrengthIncrease() + ".");
+            System.out.println(
+                    "Your strength increased by " + selectedPotion.getStrengthIncrease() + "."
+            );
         }
 
         inventory.remove(selectedPotion);
@@ -177,6 +210,21 @@ public abstract class Hero extends Entity {
         System.out.println("Current HP: " + currentHp + "/" + maxHp);
 
         return true;
+    }
+
+    /* =========================
+       COMBAT UTILITIES
+       ========================= */
+
+    /**
+     * Displays the enemy HP during combat.
+     */
+    protected void showEnemyHp(NPC enemy) {
+        System.out.println(
+                ConsoleColors.WHITE +
+                        "Enemy HP: " + enemy.getCurrentHp() + "/" + enemy.getMaxHp() +
+                        ConsoleColors.RESET
+        );
     }
 
     /* =========================

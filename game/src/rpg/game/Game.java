@@ -287,7 +287,6 @@ public class Game {
         return Rooms.ENTRANCE;
     }
 
-
     private Rooms roomEntrance() {
 
         System.out.println("\nDungeon Entrance");
@@ -320,7 +319,6 @@ public class Game {
         System.out.println("You sense danger nearby.");
 
         NPC enemy = generateRandomEnemy();
-        enemy.showDetails();
 
         if (!hero.attack(enemy)) {
             return Rooms.GAME_OVER;
@@ -338,6 +336,7 @@ public class Game {
 
         return Rooms.SHRINE_VENDOR;
     }
+
 
     private Rooms roomShrineVendor(Hero hero) {
 
@@ -374,6 +373,55 @@ public class Game {
         }
 
         return Rooms.GAME_OVER;
+    }
+
+    /* =========================
+   RANDOM EVENT
+   ========================= */
+
+    private void randomEvent(Hero hero) {
+
+        System.out.println();
+        System.out.println(
+                ConsoleColors.CYAN +
+                        "Something stirs in the darkness..." +
+                        ConsoleColors.RESET
+        );
+
+        int roll = (int) (Math.random() * 3);
+
+        switch (roll) {
+
+            case 0:
+                System.out.println(
+                        ConsoleColors.GREEN +
+                                "You find an abandoned satchel among the ruins." +
+                                ConsoleColors.RESET
+                );
+                System.out.println("You gain 15 gold.");
+                hero.addGold(15);
+                break;
+
+            case 1:
+                System.out.println(
+                        ConsoleColors.RED +
+                                "A hidden trap snaps beneath your feet!" +
+                                ConsoleColors.RESET
+                );
+                System.out.println("You lose 10 HP.");
+                hero.takeDamage(10);
+                break;
+
+            case 2:
+                System.out.println(
+                        ConsoleColors.YELLOW +
+                                "You feel watched, but nothing happens." +
+                                ConsoleColors.RESET
+                );
+                break;
+        }
+
+        System.out.println();
     }
 
     /* =========================

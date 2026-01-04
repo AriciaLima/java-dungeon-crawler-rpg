@@ -48,10 +48,10 @@ public class OathboundHunter extends Hero {
      * Combat logic for the Oathbound Hunter.
      *
      * Rules:
-     * The hero attacks first
-     * Damage has a small random variance
-     * Special attack can be used once per combat
-     * Standard damage received from enemies
+     * - Hero attacks first
+     * - Small random damage variance
+     * - Special attack usable once per combat
+     * - Standard damage received from enemies
      *
      * @param enemy The enemy NPC
      * @return true if the hero wins the combat, false otherwise
@@ -76,12 +76,11 @@ public class OathboundHunter extends Hero {
                         ConsoleColors.RESET
         );
 
-        enemy.showDetails();
-
         while (this.isAlive() && enemy.isAlive()) {
 
             boolean actionDone = false;
 
+            /* HERO TURN */
             while (!actionDone) {
 
                 System.out.println();
@@ -98,7 +97,6 @@ public class OathboundHunter extends Hero {
 
                     int variance = random.nextInt(3);
                     int damage = strength + mainWeapon.getAttack() + variance;
-
                     enemy.takeDamage(damage);
 
                     System.out.println(
@@ -107,6 +105,7 @@ public class OathboundHunter extends Hero {
                                     ConsoleColors.RESET
                     );
 
+                    showEnemyHp(enemy);
                     actionDone = true;
                 }
 
@@ -132,6 +131,7 @@ public class OathboundHunter extends Hero {
                                     ConsoleColors.RESET
                     );
 
+                    showEnemyHp(enemy);
                     actionDone = true;
                 }
 
@@ -178,6 +178,7 @@ public class OathboundHunter extends Hero {
                                     ConsoleColors.RESET
                     );
 
+                    showEnemyHp(enemy);
                     actionDone = true;
                 }
 

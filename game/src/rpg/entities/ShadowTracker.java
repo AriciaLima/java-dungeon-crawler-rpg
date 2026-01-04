@@ -22,18 +22,23 @@ public class ShadowTracker extends Hero {
     /**
      * Constructor for ShadowTracker.
      *
-     * @param name       The hero's name.
-     * @param maxHp      The hero's max HP.
-     * @param strength   The hero's strength.
-     * @param level      The hero's level.
-     * @param gold       The hero's starting gold.
-     * @param mainWeapon The hero's starting weapon.
+     * @param name       The hero's name
+     * @param maxHp      The hero's max HP
+     * @param strength   The hero's strength
+     * @param level      The hero's level
+     * @param gold       The hero's starting gold
+     * @param mainWeapon The hero's starting weapon
      */
     public ShadowTracker(String name, int maxHp, int strength,
                          int level, int gold, MainWeapon mainWeapon) {
         super(name, maxHp, strength, level, gold, mainWeapon);
     }
 
+    /**
+     * Returns the hero class enum.
+     *
+     * @return HeroClass.SHADOW_TRACKER
+     */
     @Override
     public HeroClass getHeroClass() {
         return HeroClass.SHADOW_TRACKER;
@@ -41,9 +46,11 @@ public class ShadowTracker extends Hero {
 
     /**
      * Combat logic for the Shadow Tracker.
-     * - Attacks first
+     *
+     * Rules:
+     * - Hero attacks first
      * - 20% chance to deal double damage (critical hit)
-     * - Special attack can be used once per combat
+     * - Special attack usable once per combat
      * - Takes 10% more damage from enemies
      *
      * @param enemy The enemy NPC
@@ -68,13 +75,13 @@ public class ShadowTracker extends Hero {
                         "Enemy: " + enemy.getName() +
                         ConsoleColors.RESET
         );
-
-        enemy.showDetails();
+        showEnemyHp(enemy);
 
         while (this.isAlive() && enemy.isAlive()) {
 
             boolean actionDone = false;
 
+            /* HERO TURN */
             while (!actionDone) {
 
                 System.out.println();
@@ -108,6 +115,7 @@ public class ShadowTracker extends Hero {
                                     ConsoleColors.RESET
                     );
 
+                    showEnemyHp(enemy);
                     actionDone = true;
                 }
 
@@ -133,6 +141,7 @@ public class ShadowTracker extends Hero {
                                     ConsoleColors.RESET
                     );
 
+                    showEnemyHp(enemy);
                     actionDone = true;
                 }
 
@@ -179,6 +188,7 @@ public class ShadowTracker extends Hero {
                                     ConsoleColors.RESET
                     );
 
+                    showEnemyHp(enemy);
                     actionDone = true;
                 }
 
