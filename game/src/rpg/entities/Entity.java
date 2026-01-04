@@ -51,9 +51,19 @@ public abstract class Entity {
         return name;
     }
 
+    /**
+     * Returns a formatted string with entity details.
+     */
     public String getDetails() {
         return "Name: " + name +
                 "\nHP: " + currentHp + "/" + maxHp +
                 "\nStrength: " + strength;
+    }
+
+    /**
+     * Prints entity details to the console.
+     */
+    public void showDetails() {
+        System.out.println(getDetails());
     }
 }

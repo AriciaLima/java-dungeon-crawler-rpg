@@ -286,7 +286,11 @@ public class Game {
 
     private Rooms roomCombat(Hero hero) {
 
-        System.out.println("\n" + ConsoleColors.RED + "You sense danger nearby." + ConsoleColors.RESET);
+        System.out.println(
+                "\n" + ConsoleColors.RED +
+                        "You sense danger nearby." +
+                        ConsoleColors.RESET
+        );
 
         NPC enemy = generateRandomEnemy();
 
@@ -301,23 +305,46 @@ public class Game {
             return Rooms.GAME_OVER;
         }
 
+        System.out.println();
+        System.out.println(
+                ConsoleColors.YELLOW +
+                        "Do you want to use a potion?" +
+                        ConsoleColors.RESET
+        );
+        System.out.println(ConsoleColors.YELLOW + "1 - Yes" + ConsoleColors.RESET);
+        System.out.println(ConsoleColors.YELLOW + "2 - No" + ConsoleColors.RESET);
+
+        if (readIntInRange(1, 2) == 1) {
+            hero.usePotion();
+        }
+
         return Rooms.SHRINE_VENDOR;
     }
+
 
     private Rooms roomShrineVendor(Hero hero) {
 
         Vendor vendor = new Vendor(allItems);
 
-        System.out.println("\n" + ConsoleColors.PURPLE + "Forgotten Shrine" + ConsoleColors.RESET);
-        System.out.println(ConsoleColors.YELLOW + "1 - Continue" + ConsoleColors.RESET);
-        System.out.println(ConsoleColors.YELLOW + "2 - Trade" + ConsoleColors.RESET);
+        while (true) {
 
-        if (readIntInRange(1, 2) == 1) {
-            return Rooms.BOSS;
+            System.out.println(
+                    "\n" + ConsoleColors.PURPLE +
+                            "Forgotten Shrine" +
+                            ConsoleColors.RESET
+            );
+
+            System.out.println(ConsoleColors.YELLOW + "1 - Continue" + ConsoleColors.RESET);
+            System.out.println(ConsoleColors.YELLOW + "2 - Trade" + ConsoleColors.RESET);
+
+            int choice = readIntInRange(1, 2);
+
+            if (choice == 1) {
+                return Rooms.BOSS;
+            }
+
+            vendor.sell(hero);
         }
-
-        vendor.sell(hero);
-        return Rooms.BOSS;
     }
 
     private Rooms roomBoss(Hero hero) {
@@ -352,24 +379,40 @@ public class Game {
 
     private NPC generateRandomEnemy() {
 
-        if (Math.random() < 0.5) {
-            return new NPC(
-                    "Skeleton Warrior",
-                    40,
-                    8,
-                    15,
-                    "A reanimated pile of bones."
-            );
+        boolean skeleton = Math.random() < 0.5;
+
+        String name;
+        int baseHp;
+        int baseStrength;
+        int gold;
+        String description;
+
+        if (skeleton) {
+            name = "Skeleton Warrior";
+            baseHp = 40;
+            baseStrength = 8;
+            gold = 15;
+            description = "A reanimated pile of bones.";
+        } else {
+            name = "Cursed Ghost";
+            baseHp = 35;
+            baseStrength = 10;
+            gold = 20;
+            description = "A wailing spirit trapped between worlds.";
         }
 
+        int finalHp = (int) (baseHp * selectedDifficulty.getEnemyHpMultiplier());
+        int finalStrength = (int) (baseStrength * selectedDifficulty.getEnemyStrengthMultiplier());
+
         return new NPC(
-                "Cursed Ghost",
-                35,
-                10,
-                20,
-                "A wailing spirit trapped between worlds."
+                name,
+                finalHp,
+                finalStrength,
+                gold,
+                description
         );
     }
+
 
     /* =========================
        INPUT
